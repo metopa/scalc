@@ -1,10 +1,10 @@
 package scalc.core
 
-import scalc.core.operands.{Constant, Value, binop, unop}
+import scalc.core.operands._
 
 import scala.util.parsing.combinator._
 
-class ExpressionParser(evaluationContext: SCalc) extends RegexParsers {
+class ExpressionParser(ctx: SCalc) extends RegexParsers {
   override def skipWhitespace = true
 
   def reduceOp(operands: List[~[Value, (Value, Value) => Value]]): Value = {
@@ -40,7 +40,7 @@ class ExpressionParser(evaluationContext: SCalc) extends RegexParsers {
     case Some(op) ~ t => op(t)
     case None ~ t     => t
   }
-  private def T: Parser[Value] = number | parenthesizedE | absE
+  private def T: Parser[Value] = number | ident | parenthesizedE | absE
 
   private def binop1: Parser[(Value, Value) => Value] = ("+" | "-") ^^ {
     case "+" =>
@@ -82,8 +82,11 @@ class ExpressionParser(evaluationContext: SCalc) extends RegexParsers {
 
   private def absE: Parser[Value] = ("|" ~> E1 <~ "|") ^^ (e => new unop.Abs(e))
 
-  private def number: Parser[Value] =
-    """\d+(\.\d*)?""".r ^^ { s: String =>
-      new Constant(BigDecimal(s))
-    }
+  private def number: Parser[Value] = """\d+(\.\d*)?""".r ^^ { s =>
+    new Constant(BigDecimal(s))
+  }
+
+  private def ident: Parser[Variable] = """(\w|_)+""".r ^^ { s =>
+    new Variable(s, ctx)
+  }
 }
