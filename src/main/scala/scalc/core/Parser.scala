@@ -20,8 +20,8 @@ class Parser(ctx: SCalc) extends RegexParsers {
   def parseStmt(expr: String): Statement = {
     parseAll(stmt, expr) match {
       case Success(value, _) => value
-      case Failure(msg, _)   => throw new SCalcError("parser: " + msg)
-      case Error(msg, _)     => throw new SCalcError("parser: " + msg)
+      case Failure(msg, _)   => throw new SCalcError("parser: invalid input")
+      case Error(msg, _)     => throw new SCalcError("parser: invalid input")
     }
   }
 

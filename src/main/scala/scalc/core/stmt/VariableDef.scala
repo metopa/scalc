@@ -4,10 +4,8 @@ import scalc.core.SCalc
 import scalc.core.operands.Value
 
 class VariableDef(name: String, value: Value, ctx: SCalc) extends Statement {
-  override def execute(): Unit = ctx.setNamedValue(name, value.evaluate())
+  private lazy val evaluated = value.evaluate()
 
-  override def evaluate(): BigDecimal = {
-    ctx.getNamedValue(name).evaluate()
-  }
-
+  override def execute(): Unit = ctx.setNamedValue(name, evaluated)
+  override def evaluate(): BigDecimal = evaluated
 }

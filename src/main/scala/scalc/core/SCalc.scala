@@ -7,11 +7,13 @@ import scala.collection.mutable
 class SCalc {
   private val expressionParser = new Parser(this)
 
-  def evaluate(s: String): BigDecimal = {
+  def evaluate(s: String, withExec: Boolean = true): BigDecimal = {
     val stmt = expressionParser.parseStmt(s)
-    stmt.execute()
+    if (withExec)
+      stmt.execute()
     val ans = stmt.evaluate()
-    setNamedValue("ans", ans)
+    if (withExec)
+      setNamedValue("ans", ans)
     ans
   }
 
