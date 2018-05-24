@@ -75,8 +75,8 @@ object SCalcWindow extends JFXApp {
   stage = new PrimaryStage {
     scene = new Scene(300, 400) {
       title = "SCalc"
-      minHeight = 350
-      minWidth = 200
+      minHeight = 400
+      minWidth = 300
       root = new VBox {
         vgrow = Priority.Always
         spacing = 6
@@ -85,9 +85,7 @@ object SCalcWindow extends JFXApp {
           new Label(
             "Expression is evaluated as you type in.\n" +
               "To define new variable, type ident = expr\n" +
-              "To define new macro, type ident => expr") {
-            wrapText = true
-          },
+              "To define new macro, type ident => expr"),
           inputField,
           outputField,
           historyArea
@@ -99,7 +97,7 @@ object SCalcWindow extends JFXApp {
   private def evaluate(expr: String): Unit = {
     Try(core.evaluate(expr, true)) match {
       case Success(result) =>
-        val resultStr = result.toString
+        val resultStr = bigDecimalToString(result)
         showFinalResult(resultStr)
         appendHistory(expr, resultStr)
       case Failure(err) =>
@@ -113,11 +111,14 @@ object SCalcWindow extends JFXApp {
     } else {
       Try(core.evaluate(expr, false)) match {
         case Success(result) =>
-          val resultStr = result.toString
-          showTmpResult(resultStr)
+          showTmpResult(bigDecimalToString(result))
         case Failure(_) =>
           invalidateTmpResult()
       }
     }
+  }
+
+  private def bigDecimalToString(x: BigDecimal): String = {
+    x toString
   }
 }
