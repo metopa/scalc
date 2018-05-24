@@ -104,7 +104,7 @@ class Parser(ctx: SCalc) extends RegexParsers {
     new Constant(BigDecimal(s))
   }
 
-  private def ident: Parser[Variable] = """(\w|_)+""".r ^^ { s =>
+  private def ident: Parser[Variable] = """[a-zA-Z_]+""".r ^^ { s =>
     new Variable(s, ctx)
   }
 }
