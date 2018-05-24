@@ -57,6 +57,7 @@ object SCalcWindow extends JFXApp {
   private def showFinalResult(res: String): Unit = {
     outputField.text = ""
     inputField.text = res
+    inputField.positionCaret(res length)
   }
 
   private def showError(err: String): Unit = {
@@ -69,7 +70,8 @@ object SCalcWindow extends JFXApp {
   }
 
   private def appendHistory(expr: String, result: String): Unit = {
-    historyArea.text = historyArea.text() + s"$expr == $result\n"
+    historyArea.text = historyArea.text() + s"$expr ⟶ $result\n"
+    historyArea.scrollTop = Double.MaxValue
   }
 
   stage = new PrimaryStage {
@@ -83,7 +85,7 @@ object SCalcWindow extends JFXApp {
         padding = Insets(10)
         children = Seq(
           new Label(
-            "Expression is evaluated as you type in.\n" +
+            "Expression is evaluated as you type in\n" +
               "To define new variable, type ident = expr\n" +
               "To define new macro, type ident => expr"),
           inputField,
