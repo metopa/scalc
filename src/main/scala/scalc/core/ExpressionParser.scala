@@ -4,7 +4,7 @@ import scalc.core.operands.{Constant, Value, binop, unop}
 
 import scala.util.parsing.combinator._
 
-object ExpressionParser extends RegexParsers {
+class ExpressionParser(evaluationContext: SCalc) extends RegexParsers {
   override def skipWhitespace = true
 
   def reduceOp(operands: List[~[Value, (Value, Value) => Value]]): Value = {
@@ -19,8 +19,8 @@ object ExpressionParser extends RegexParsers {
   def parseExpr(expr: String): Value = {
     parse(E1, expr) match {
       case Success(value, _) => value
-      case Failure(msg, _)   => throw new ParsingError(msg)
-      case Error(msg, _)     => throw new ParsingError(msg)
+      case Failure(msg, _)   => throw new SCalcError("parser: " + msg)
+      case Error(msg, _)     => throw new SCalcError("parser: " + msg)
     }
   }
 
