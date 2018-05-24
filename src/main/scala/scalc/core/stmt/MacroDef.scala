@@ -10,4 +10,3 @@ class MacroDef(name: String, value: Value, ctx: SCalc) extends Statement {
 
   override def evaluate(): BigDecimal = value.evaluate()
 }
-

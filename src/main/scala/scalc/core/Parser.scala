@@ -58,6 +58,7 @@ class Parser(ctx: SCalc) extends RegexParsers {
     case Some(op) ~ t => op(t)
     case None ~ t     => t
   }
+
   private def T: Parser[Value] = number | ident | parenthesizedE | absE
 
   private def binop1: Parser[(Value, Value) => Value] = ("+" | "-") ^^ {
@@ -100,11 +101,13 @@ class Parser(ctx: SCalc) extends RegexParsers {
 
   private def absE: Parser[Value] = ("|" ~> E1 <~ "|") ^^ (e => new unop.Abs(e))
 
-  private def number: Parser[Value] = """\d+(\.\d*)?""".r ^^ { s =>
-    new Constant(BigDecimal(s))
-  }
+  private def number: Parser[Value] =
+    """\d+(\.\d*)?""".r ^^ { s =>
+      new Constant(BigDecimal(s))
+    }
 
-  private def ident: Parser[Variable] = """[a-zA-Z_]+""".r ^^ { s =>
-    new Variable(s, ctx)
-  }
+  private def ident: Parser[Variable] =
+    """[a-zA-Z_]+""".r ^^ { s =>
+      new Variable(s, ctx)
+    }
 }
