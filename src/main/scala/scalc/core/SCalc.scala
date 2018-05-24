@@ -5,11 +5,13 @@ import scalc.core.operands.{Constant, Value}
 import scala.collection.mutable
 
 class SCalc {
-  private val expressionParser = new ExpressionParser(this)
+  private val expressionParser = new Parser(this)
 
   def evaluate(s: String): BigDecimal = {
-    val ans = expressionParser.parseExpr(s).evaluate()
-    setNamedValue("ans", new Constant(ans))
+    val stmt = expressionParser.parseStmt(s)
+    stmt.execute()
+    val ans = stmt.evaluate()
+    setNamedValue("ans", ans)
     ans
   }
 
@@ -24,5 +26,9 @@ class SCalc {
 
   def setNamedValue(name: String, value: Value): Unit = {
     namedValues.put(name, value)
+  }
+
+  def setNamedValue(name: String, value: BigDecimal): Unit = {
+    namedValues.put(name, new Constant(value))
   }
 }

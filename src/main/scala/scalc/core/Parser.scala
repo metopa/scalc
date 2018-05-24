@@ -1,10 +1,11 @@
 package scalc.core
 
 import scalc.core.operands._
+import scalc.core.stmt.{Expression, MacroDef, Statement, VariableDef}
 
 import scala.util.parsing.combinator._
 
-class ExpressionParser(ctx: SCalc) extends RegexParsers {
+class Parser(ctx: SCalc) extends RegexParsers {
   override def skipWhitespace = true
 
   def reduceOp(operands: List[~[Value, (Value, Value) => Value]]): Value = {
@@ -16,12 +17,29 @@ class ExpressionParser(ctx: SCalc) extends RegexParsers {
     }
   }
 
-  def parseExpr(expr: String): Value = {
-    parse(E1, expr) match {
+  def parseStmt(expr: String): Statement = {
+    parseAll(stmt, expr) match {
       case Success(value, _) => value
       case Failure(msg, _)   => throw new SCalcError("parser: " + msg)
       case Error(msg, _)     => throw new SCalcError("parser: " + msg)
     }
+  }
+
+  private def stmt: Parser[Statement] = assignStmt | exprStmt
+
+  private def exprStmt: Parser[Statement] = E1 ^^ (e => new Expression(e))
+
+  private def assignStmt: Parser[Statement] = (ident ~ assign ~ E1) ^^ {
+    case id ~ assignOp ~ e => assignOp(id.getName, e)
+  }
+
+  private def assign: Parser[(String, Value) => Statement] = ("=>" | "=") ^^ {
+    case "=" =>
+      (s, v) =>
+        new VariableDef(s, v, ctx)
+    case "=>" =>
+      (s, v) =>
+        new MacroDef(s, v, ctx)
   }
 
   private def E1: Parser[Value] = ((E2 ~ binop1).* ~ E2) ^^ {
